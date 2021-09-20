@@ -1,0 +1,32 @@
+<!DOCTYPE = html>
+<html>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    .imgbox {
+            display: grid;
+            height: 100%;
+        }
+        .center-fit {
+            max-width: 100%;
+            max-height: 100vh;
+            margin: auto;
+        }
+     
+     .imagewrap {display:inline-block;position:relative;}  
+     .button1 {position:absolute;bottom:0;left:65%;}
+     .button2 {position:absolute;bottom:40%;right:0;}
+     .button3 {position:absolute;right:40%;top:25%;}
+</style>
+<body>
+<div class="imagewrap">
+<img src="room1.svg">
+<form action='actionUrl' method = 'GET'>
+<input type="button" class="button1" value="Add actuator - light" /> </form>
+<input type="button" class="button2" value="Add actuator - light" />
+<input type="button" class="button3" value="Add sensor - sunlight" />
+</div>
+</body>
+</html>
