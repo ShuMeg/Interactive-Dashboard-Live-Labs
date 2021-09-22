@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('room1/', views.room1_display, name='room1'),
     path('room2/', views.room2_display, name='room2'),
+    path('request_room1/', views.requestroom, name='requestroom'),
 ]

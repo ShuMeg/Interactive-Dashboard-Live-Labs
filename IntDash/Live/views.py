@@ -7,4 +7,6 @@ def room1_display(request):
     
 def room2_display(request):
     return render(request, 'room2.html')
-    
+
+def requestroom(request):
+    return render(request, 'room1.html')
