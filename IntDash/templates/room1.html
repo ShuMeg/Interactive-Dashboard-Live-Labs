@@ -51,8 +51,31 @@
 <script>
 
 document.getElementById("changeGreen").onclick = function(){
-	document.getElementById("changeGreen").style.color = 'green';
+    
+	//document.getElementById("changeGreen").style.color = 'green';
+    
+    var mqtt_server = "127.0.0.1";
+    var mqtt_port = 1883;
+    var topic = "sensor/sun_light";
+    client = new Paho.MQTT.Client(mqtt_server, mqtt_port,"");
+    client.onMessageArrived = onMessageArrived;
+    client.onMessageArrived = onMessageArrived;
+    client.connect({onSuccess:onConnect(topic)});
+    
 }
+
+function onConnect(topic) {
+
+  //var mqtt_destname = document.getElementById("mqtt_destname").value;  
+  client.subscribe(topic);
+}
+
+function onMessageArrived(message) {
+  var result = message.payloadString;
+  document.getElementById("changeGreen").innerHTML = result;
+}
+
+
 </script>
     </body>
 </html>
