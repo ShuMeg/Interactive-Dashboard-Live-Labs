@@ -1,5 +1,9 @@
-<!DOCTYPE = html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
     <style>
         *{
             margin: 0;
@@ -24,58 +28,31 @@
         .sunlight{position:absolute;right:70%;top:35%;}
     
     </style>
+
+    
     <body>
-        <div class="imagewrap">
+    
+<div class="imagewrap">
         {% include "room1.svg" %} 
         
-            <form action="{% url 'requestroom' %}" method="post">
-                {% csrf_token %}
-                <input id='room_light' type="submit" class="button1" value="Add actuator -room_light" />
-                </form>
-            <button id="changeGreen">Change Font Color Green</button>
-            
-            <form action="{% url 'requestroom' %}" method="post">
-                {% csrf_token %}
-                <input id='wash_light' type="submit" class="button2" value="Add actuator -wash_light" />
-                </form>
-            
-            <form action="{% url 'requestroom' %}" method="post">
-                {% csrf_token %}
-                <input id='sunlight' type="submit" class="button3" value="Add sensor - sunlight" />
-                </form>
+            <button id = "room_light" class="button1"> Room Light </button>
+            <button id="changeGreen" onclick="clickMe(this)">Change Font Color Green</button>
+            <button id = "wash_light" class="button2"> Wash Light </button>
+            <button id = "sunlight_sensor" class="button3"> Sun Light Sensor </button>
         
         
         
         </div>
+
+
+        <script type="text/javascript">
         
-<script>
+   
+        
+            
+            
+        </script>
+        
 
-document.getElementById("changeGreen").onclick = function(){
-    
-	//document.getElementById("changeGreen").style.color = 'green';
-    
-    var mqtt_server = "127.0.0.1";
-    var mqtt_port = 1883;
-    var topic = "sensor/sun_light";
-    client = new Paho.MQTT.Client(mqtt_server, mqtt_port,"");
-    client.onMessageArrived = onMessageArrived;
-    client.onMessageArrived = onMessageArrived;
-    client.connect({onSuccess:onConnect(topic)});
-    
-}
-
-function onConnect(topic) {
-
-  //var mqtt_destname = document.getElementById("mqtt_destname").value;  
-  client.subscribe(topic);
-}
-
-function onMessageArrived(message) {
-  var result = message.payloadString;
-  document.getElementById("changeGreen").innerHTML = result;
-}
-
-
-</script>
     </body>
 </html>
