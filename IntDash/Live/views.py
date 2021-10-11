@@ -5,13 +5,12 @@ from django.http import HttpResponse
 from django.http import StreamingHttpResponse
 from django.http import JsonResponse
 
+url = "http://localhost:8123/api/services/"
 
 headers = {
     "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIzYTBhZWIwZjVmZjE0MzkwYWE4YjVlN2ZmYTg0NDU4MiIsImlhdCI6MTYzMzk1OTg1OCwiZXhwIjoxOTQ5MzE5ODU4fQ.yXJe76bpJOUPsJB8YQTQzWkKmnSBf7BXlrQHc99AMYA",
     "content-type": "application/json",
 }
-
-home-assistant = "http://localhost:8123/api/services/"
 
 # Create your views here.
 def room1_display(request):
@@ -32,6 +31,7 @@ def getSensorData(request):
     
     
 def sendActorDataRoomLight(request):
+    print("in herre")
     url_roomlight = url + "input_boolean/toggle"
     entity_data = {"entity_id" : "input_boolean.room_light" }
     

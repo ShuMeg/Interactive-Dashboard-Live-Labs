@@ -34,9 +34,8 @@
 <div class="imagewrap">
         {% include "room1.svg" %} 
         
-            <button id = "room_light" class="room_light" onclick="clickMe(this)> Room Light </button>
-            <!button id="Heater" onclick="clickMe(this)"Change Font Color Green/button>
-            <button id = "wash_light" class="wash_light"> Wash Light </button>
+            <button id = "room_light" class="room_light" onclick="clickMeRoomLight()"> Room Light </button>
+            <button id = "wash_light" class="wash_light" onclick="clickMeWashLight()"> Wash Light </button>
             <button id = "sunlight_sensor" class="sunlight"> Sun Light Sensor </button>
             <button id = "temperature_sensor" class="temperature_sensor"> Temperature Sensor </button>
         
@@ -47,7 +46,18 @@
 
         <script type="text/javascript">
         
-        function clickMe(this){
+        function clickMeRoomLight(){
+         $.ajax({
+         url: '{% url "sendActorDataRoomLight" %}',
+         
+         });
+        }
+        
+        function clickMeWashLight(){
+         $.ajax({
+         url: '{% url "sendActorDataRoomLight" %}',
+         
+         });
         }
         
         
