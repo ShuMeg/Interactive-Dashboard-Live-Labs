@@ -1,0 +1,14 @@
+#automation.yaml for publishing MQTT messages when
+#when changes in the sensor state happens
+#
+#
+
+- alias: 'Publish multiple sensor values'
+  trigger:
+    platform: state
+    entity_id: input_boolean.room_light1, input_boolean.washbasin_light, input_number.sun_light, input_number.temperature_sensor
+  action:
+    service: mqtt.publish
+    data_template:
+      payload: "{{trigger.to_state.state}}"
+      topic: "sensor/{{trigger.to_state.object_id}}"
