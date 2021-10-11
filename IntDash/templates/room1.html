@@ -21,10 +21,10 @@
         
         .imagewrap {display:inline-block;position:relative;}  
       
-        .room_light{position:absolute;bottom:0%;left:55%;}
-        .wash_light{position:absolute;bottom:40%;right:10;}
+        .room_light1{position:absolute;bottom:0%;left:55%;}
+        .washbasin_light{position:absolute;bottom:40%;right:10%;}
         .sunlight{position:absolute;right:50%;top:35%;}
-        .temperature_sensor{position:absolute;right: 80%;top:80%;}
+        .temperature_sensor{position:absolute;right: 40%;top:60%;}
     
     </style>
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
@@ -34,8 +34,8 @@
 <div class="imagewrap">
         {% include "room1.svg" %} 
         
-            <button id = "room_light" class="room_light" onclick="clickMeRoomLight()"> Room Light </button>
-            <button id = "wash_light" class="wash_light" onclick="clickMeWashLight()"> Wash Light </button>
+            <button id = "room_light1" class="room_light1" onclick="clickMeRoomLight()"> Room Light </button>
+            <button id = "washbasin_light" class="washbasin_light" onclick="clickMeWashLight()"> Wash Basin Light </button>
             <button id = "sunlight_sensor" class="sunlight"> Sun Light Sensor </button>
             <button id = "temperature_sensor" class="temperature_sensor"> Temperature Sensor </button>
         
@@ -55,7 +55,7 @@
         
         function clickMeWashLight(){
          $.ajax({
-         url: '{% url "sendActorDataRoomLight" %}',
+         url: '{% url "sendActorDataWashLight" %}',
          
          });
         }
@@ -70,7 +70,9 @@
         success: function(data){
         data = JSON.parse(data)
         document.getElementById("sunlight_sensor").innerHTML = "sunlight_sensor : " + data.sunlight_sensor;
-        document.getElementById("temperature_sensor").innerHTML = "temperature_sensor" + data.temperature_sensor;
+        document.getElementById("temperature_sensor").innerHTML = "temperature_sensor : " + data.temperature_sensor;
+        document.getElementById("washbasin_light").innerHTML = "washbasin_light : " + data.washbasin_light;
+        document.getElementById("room_light1").innerHTML = "room_light : " + data.room_light1;
         }
         
         });

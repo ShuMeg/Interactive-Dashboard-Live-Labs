@@ -21,11 +21,21 @@ def getSensorData(request):
     print("in get sensor data")
     file_sunlight_sensor = "Files/" + "sunlight_sensor" + ".txt"
     file_temperature_sensor = "Files/" + "temperature_sensor" + ".txt"
+    file_washbasin_light = "Files/" + "washbasin_light" + ".txt"
+    file_room_light1 = "Files/" + "room_light1" + ".txt"
     
     data_sunlight_sensor = open(file_sunlight_sensor, "r").readline()
     data_temperature_sensor = open(file_temperature_sensor, "r").readline()
+    data_washbasin_light = open(file_washbasin_light, "r").readline()
+    data_room_light1 = open(file_room_light1, "r").readline()
     
-    f = {"sunlight_sensor": data_sunlight_sensor, "temperature_sensor" : data_temperature_sensor}
+    
+    f = {
+          "sunlight_sensor": data_sunlight_sensor, 
+          "temperature_sensor" : data_temperature_sensor,
+          "washbasin_light" : data_washbasin_light,
+          "room_light1" : data_room_light1
+          }
     print(f)
     return JsonResponse(json.dumps(f, ensure_ascii=False), safe=False)
     
@@ -33,7 +43,7 @@ def getSensorData(request):
 def sendActorDataRoomLight(request):
     print("in herre")
     url_roomlight = url + "input_boolean/toggle"
-    entity_data = {"entity_id" : "input_boolean.room_light" }
+    entity_data = {"entity_id" : "input_boolean.room_light1" }
     
     response =  requests.post(url_roomlight, headers=headers, data = json.dumps(entity_data))
     print (response.text)
@@ -41,7 +51,7 @@ def sendActorDataRoomLight(request):
     
 def sendActorDataWashLight(request):
     url_washlight = url + "input_boolean/toggle"
-    entity_data = {"entity_id" : "input_boolean.wash_light" }
+    entity_data = {"entity_id" : "input_boolean.washbasin_light" }
     
     response =  requests.post(url_washlight, headers=headers, data = json.dumps(entity_data))
     print (response.text)
