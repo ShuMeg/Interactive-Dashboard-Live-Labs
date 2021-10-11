@@ -23,18 +23,22 @@ def getSensorData(request):
     file_temperature_sensor = "Files/" + "temperature_sensor" + ".txt"
     file_washbasin_light = "Files/" + "washbasin_light" + ".txt"
     file_room_light1 = "Files/" + "room_light1" + ".txt"
+    file_bot = "Files/bot.txt"
     
     data_sunlight_sensor = open(file_sunlight_sensor, "r").readline()
     data_temperature_sensor = open(file_temperature_sensor, "r").readline()
     data_washbasin_light = open(file_washbasin_light, "r").readline()
     data_room_light1 = open(file_room_light1, "r").readline()
-    
+    data_bot = open(file_bot, "r").readlines()
     
     f = {
           "sunlight_sensor": data_sunlight_sensor, 
           "temperature_sensor" : data_temperature_sensor,
           "washbasin_light" : data_washbasin_light,
-          "room_light1" : data_room_light1
+          "room_light1" : data_room_light1,
+          "bot":{
+                "left": data_bot[0],
+                "bottom": data_bot[1]}
           }
     print(f)
     return JsonResponse(json.dumps(f, ensure_ascii=False), safe=False)

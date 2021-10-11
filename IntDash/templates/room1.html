@@ -25,6 +25,7 @@
         .washbasin_light{position:absolute;bottom:40%;right:10%;}
         .sunlight{position:absolute;right:50%;top:35%;}
         .temperature_sensor{position:absolute;right: 40%;top:60%;}
+        .dot {position:absolute; height: 10px; width: 10px; background-color: red; border-radius: 50%; display: inline-block; }
     
     </style>
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
@@ -38,7 +39,7 @@
             <button id = "washbasin_light" class="washbasin_light" onclick="clickMeWashLight()"> Wash Basin Light </button>
             <button id = "sunlight_sensor" class="sunlight"> Sun Light Sensor </button>
             <button id = "temperature_sensor" class="temperature_sensor"> Temperature Sensor </button>
-        
+           <span class="dot" id = "bot"></span>
         
         
         </div>
@@ -73,6 +74,8 @@
         document.getElementById("temperature_sensor").innerHTML = "temperature_sensor : " + data.temperature_sensor;
         document.getElementById("washbasin_light").innerHTML = "washbasin_light : " + data.washbasin_light;
         document.getElementById("room_light1").innerHTML = "room_light : " + data.room_light1;
+        document.getElementById("bot").style.left = data.bot.left;
+        document.getElementById("bot").style.bottom = data.bot.bottom;
         }
         
         });
