@@ -19,6 +19,9 @@ def main():
     execute_from_command_line(sys.argv)
 
 if __name__ == '__main__':
-
-    mqtt_var = MQTT()
+    
+    try:
+        mqtt_var = MQTT()
+    except ConnectionRefusedError:
+        print("MQTT broker needs to be connected")
     main()

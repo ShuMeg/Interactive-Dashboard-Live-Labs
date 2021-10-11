@@ -11,8 +11,8 @@ class MQTT:
         MQTT.mqtt_subscriber = mqtt.Client('Live Lab')
         MQTT.mqtt_subscriber.on_message = MQTT.on_message
         MQTT.mqtt_subscriber.connect(mqttIp, 1883, 70)
-        MQTT.mqtt_subscriber.subscribe("changeGreen", 2)
-        MQTT.mqtt_subscriber.subscribe("changeBlue", 2)
+        MQTT.mqtt_subscriber.subscribe("temperature_sensor", 2)
+        MQTT.mqtt_subscriber.subscribe("sunlight_sensor", 2)
         
         threadSubscriber = threading.Thread(target=self.startLoopingSubscriber)
         threadSubscriber.start()

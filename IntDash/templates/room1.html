@@ -20,25 +20,25 @@
             }
         
         .imagewrap {display:inline-block;position:relative;}  
-        .button1 {position:absolute;bottom:0;left:65%;}
-        .button2 {position:absolute;bottom:40%;right:0;}
-        .button3 {position:absolute;right:40%;top:25%;}
-        .room_light{position:absolute;bottom:0;left:75%;}
-        .wash_light{position:absolute;bottom:40%;right:10%;}
-        .sunlight{position:absolute;right:70%;top:35%;}
+      
+        .room_light{position:absolute;bottom:0%;left:55%;}
+        .wash_light{position:absolute;bottom:40%;right:10;}
+        .sunlight{position:absolute;right:50%;top:35%;}
+        .temperature_sensor{position:absolute;right: 80%;top:80%;}
     
     </style>
-
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     
     <body>
     
 <div class="imagewrap">
         {% include "room1.svg" %} 
         
-            <button id = "room_light" class="button1"> Room Light </button>
-            <button id="changeGreen" onclick="clickMe(this)">Change Font Color Green</button>
-            <button id = "wash_light" class="button2"> Wash Light </button>
-            <button id = "sunlight_sensor" class="button3"> Sun Light Sensor </button>
+            <button id = "room_light" class="room_light" onclick="clickMe(this)> Room Light </button>
+            <!button id="Heater" onclick="clickMe(this)"Change Font Color Green/button>
+            <button id = "wash_light" class="wash_light"> Wash Light </button>
+            <button id = "sunlight_sensor" class="sunlight"> Sun Light Sensor </button>
+            <button id = "temperature_sensor" class="temperature_sensor"> Temperature Sensor </button>
         
         
         
@@ -47,8 +47,22 @@
 
         <script type="text/javascript">
         
-   
         
+        
+        function ajaxCall(){
+        $.ajax({
+        url: '{% url "getSensorData" %}',
+        
+        success: function(data){
+        data = JSON.parse(data)
+        document.getElementById("sunlight_sensor").innerHTML = "sunlight_sensor : " + data.sunlight_sensor;
+        document.getElementById("temperature_sensor").innerHTML = "temperature_sensor" + data.temperature_sensor;
+        }
+        
+        });
+        }
+        
+        setInterval(ajaxCall, 1000);
             
             
         </script>
