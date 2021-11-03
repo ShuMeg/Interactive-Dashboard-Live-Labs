@@ -108,7 +108,7 @@ def clickActuator(request):
     actuator = request.POST.get('actuatorName')
     url_switchActuator = url + "input_boolean/toggle"
     entity_data = {"entity_id" : "input_boolean."+actuator }
-    response =  requests.post(url_roomlight, headers=headers, data = json.dumps(entity_data))
+    response =  requests.post(url_switchActuator, headers=headers, data = json.dumps(entity_data))
     return JsonResponse({'message':'success'}, status=200)
 
 def sendActorDataRoomLight(request):
