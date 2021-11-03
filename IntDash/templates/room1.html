@@ -19,8 +19,8 @@
                 margin: auto;
             }
         
-        .imagewrap {display:inline-block;position:relative;}  
-      
+        .imagewrap {display:inline-block;position:relative;}
+        /*start buttons (css) here*/
         .room_light1{position:absolute;bottom:0%;left:55%;}
         .washbasin_light{position:absolute;bottom:40%;right:10%;}
         .sunlight{position:absolute;right:50%;top:35%;}
@@ -30,22 +30,45 @@
     </style>
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     
-    <body>
-    
-<div class="imagewrap">
+    <body  >
+    <h2>NEW RESOURCE</h2>
+    <h3>(Please use the same name as your topic to subscribe, and if you are referring to the same resource, keep the name constant. DOUBLE CLICK ON THE BUTTON LEADS TO DELETION)</h3>
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default" onclick="submit_sensor()">Save</button>
+    </form>
+    <button id="demo" style = "position: absolute; top: 20%; left: 40%; background-color: yellow"></button>
+<div class="imagewrap" id="buttonDivision" onmousemove="showCoords(event)" onmouseout="clearCoor()">
         {% include "room1.svg" %} 
-        
+            
+            <!start buttons (html) here>
             <button id = "room_light1" class="room_light1" onclick="clickMeRoomLight()"> Room Light </button>
             <button id = "washbasin_light" class="washbasin_light" onclick="clickMeWashLight()"> Wash Basin Light </button>
-            <button id = "sunlight_sensor" class="sunlight"> Sun Light Sensor </button>
-            <button id = "temperature_sensor" class="temperature_sensor"> Temperature Sensor </button>
-           <span class="dot" id = "bot"></span>
-        
-        
+
+            <span class="dot" id = "bot"></span>
+            
+            <button id = "reload_data" onclick = "reloadData()">Reload New Data</button>
+            
         </div>
 
 
         <script type="text/javascript">
+        var resourceList;
+        var sensorList;
+        var actuatorList;
+        
+        function showCoords(event) {
+          var x = event.clientX;
+          var y = event.clientY;
+          var xPercent = x / $( document ).width() * 100;
+          var yPercent = y / $( document ).height() * 100;
+          var coor = "X coords: " + xPercent + ", Y coords: " + yPercent;
+          document.getElementById("demo").innerHTML = coor;
+        }
+        
+        function clearCoor() {
+          document.getElementById("demo").innerHTML = "";
+        }
         
         function clickMeRoomLight(){
          $.ajax({
@@ -57,11 +80,10 @@
         function clickMeWashLight(){
          $.ajax({
          url: '{% url "sendActorDataWashLight" %}',
-         
+       
          });
         }
-        
-        
+
         
         
         function ajaxCall(){
@@ -70,16 +92,105 @@
         
         success: function(data){
         data = JSON.parse(data)
-        document.getElementById("sunlight_sensor").innerHTML = "sunlight_sensor : " + data.sunlight_sensor;
-        document.getElementById("temperature_sensor").innerHTML = "temperature_sensor : " + data.temperature_sensor;
-        document.getElementById("washbasin_light").innerHTML = "washbasin_light : " + data.washbasin_light;
-        document.getElementById("room_light1").innerHTML = "room_light : " + data.room_light1;
-        document.getElementById("bot").style.left = data.bot.left;
-        document.getElementById("bot").style.bottom = data.bot.bottom;
+        //<!start buttons (jss) here>
+        if (sensorList)
+        {
+         list_len =  sensorList.length;
+         console.log("in get sensor data: "+list_len);
+         //document.getElementById("washbasin_light").innerHTML = "washbasin_light : " + data["washbasin_light"];
+         //document.getElementById("room_light1").innerHTML = "room_light : " + data["room_light1"];
+         for(i=0; i<list_len; i++)
+          { try{
+            document.getElementById(sensorList[i].sensor).innerHTML =  sensorList[i].sensor +" : "+ data[sensorList[i].sensor];
+              }
+            catch(err)
+            {
+            }
+                  }
+                 }
+                 
+         if (actuatorList)
+        {
+         list_len =  actuatorList.length;
+         console.log("in get actuator data: "+list_len);
+
+         for(i=0; i<list_len; i++)
+          { try{
+            document.getElementById(actuatorList[i].actuator).innerHTML =  actuatorList[i].actuator +" : "+ data[actuatorList[i].actuator];
+              }
+            catch(err)
+            {
+            }
+            
+            }
+       
+        }
+              }
+        
+             });
         }
         
+        function reloadData(){
+         $.ajax({
+         url: '{% url "reloadData" %}',
+         
+         success: function(data){
+         data = JSON.parse(data);
+         resourceList = data;
+         sensorList = data ["sensors"] ;
+         actuatorList = data ["actuators"] ;
+         sensorList_len = sensorList.length;
+         actuatorList_len = actuatorList.length;
+         console.log(sensorList_len);
+         console.log(actuatorList_len);
+         text="";
+         
+         for(i=0; i <sensorList_len; i++)
+         { text = "<button style = \" position : absolute; top:" + sensorList[i].posy +"%; left:"+ sensorList[i].posx +"%;\" id = \""+sensorList[i].sensor+"\" ondblclick = \" deleteButton(this.id)\" >"+sensorList[i].sensor+"</button>\n";
+          document.getElementById("buttonDivision").innerHTML += text;
+         
+         }
+         
+         for(i=0; i <actuatorList_len; i++)
+         { text = "<button style = \" position : absolute; top:" + actuatorList[i].posy +"%; left:"+ actuatorList[i].posx +"%;\" id = \""+actuatorList[i].actuator+"\" ondblclick = \" deleteButton(this.id)\"  onclick = \"clickActuator(this.id)\" >"+actuatorList[i].actuator+"</button>\n";
+          document.getElementById("buttonDivision").innerHTML += text;
+         
+         }
+         }
+         
+         });
+        }
+        
+        function clickActuator(buttonID)
+        {
+        
+        $.ajax({
+         type: "POST",
+         url: '{% url "clickActuator" %}',
+         data: { csrfmiddlewaretoken: "{{ csrf_token }}",
+                 actuatorName: buttonID
+           },
+           dataType: "json",
+         success: function(){
+         console.log("done");
+         }
         });
         }
+        
+        
+        function deleteButton(buttonID){ 
+        $.ajax({
+         type: "POST",
+         url: '{% url "deleteSensorData" %}',
+         data: { csrfmiddlewaretoken: "{{ csrf_token }}",
+                 sensorName: buttonID
+           },
+           dataType: "json",
+         
+           success: function(){   document.getElementById(buttonID).remove(); }
+          });
+        }
+        
         
         setInterval(ajaxCall, 1000);
             

@@ -1,9 +1,16 @@
+import os
+import sys
 import json
 import requests
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.http import StreamingHttpResponse
 from django.http import JsonResponse
+from .forms import newResourceForms
+from .models import newResource
+from .add_sensor import *
+
 
 url = "http://localhost:8123/api/services/"
 
@@ -14,36 +21,96 @@ headers = {
 
 # Create your views here.
 def room1_display(request):
-    return render(request, 'room1.html')
-
+    context={}
+    name = ""
+    form = newResourceForms()
+    if request.method == "POST":
+       pDict = request.POST.copy() 
+       form = newResourceForms(pDict) #if not valid shows error with previous post values in corresponding field
+       if form.is_valid():
+           form.save()
+           name = form.cleaned_data.get("name")
+           posx = form.cleaned_data.get("position_x")
+           posy = form.cleaned_data.get("position_y")
+           
+           #form = newResourceForms() # show empty form no need to give HttpResponseRedirect()
+           
+       
+    #form=newResourceForms(request.POST or None, request.FILES or None)
+    #if form.is_valid():
+    #   form.save()
+    #   name = form.cleaned_data.get("name")
+    #   posx = form.cleaned_data.get("position_x")
+    #   posy = form.cleaned_data.get("position_y")
+    #   getSensorList(name, posx, posy)
+    #   form=newResourceForms(request.POST or None, request.FILES or None)
+    context['form']= form
+    
+    return render(request, 'room1.html', context)
+    
     
 def getSensorData(request):
-    print("in get sensor data")
-    file_sunlight_sensor = "Files/" + "sunlight_sensor" + ".txt"
-    file_temperature_sensor = "Files/" + "temperature_sensor" + ".txt"
-    file_washbasin_light = "Files/" + "washbasin_light" + ".txt"
-    file_room_light1 = "Files/" + "room_light1" + ".txt"
-    file_bot = "Files/bot.txt"
+    sensorData = {}
+    sensors_list = getSensorList()
+    actuator_list = getActuatorList()
+    for sensors in sensors_list:
+        try:
+            sensor_file_name = "Files/" + sensors["sensor"] + ".txt"
+            file = open(sensor_file_name, "r")
+            sensorData[sensors["sensor"]] =  file.readline()
+        except (IOError, FileNotFoundError) as error:
+            file = open(sensor_file_name, "w")
+            sensorData[sensors["sensor"]] = ""
+        finally:
+            file.close()
+            
+    for actuator in actuator_list:
+        try:
+            sensor_file_name = "Files/" + actuator["actuator"] + ".txt"
+            file = open(sensor_file_name, "r")
+            sensorData[actuator["actuator"]] =  file.readline()
+        except (IOError, FileNotFoundError) as error:
+            file = open(sensor_file_name, "w")
+            sensorData[actuator["actuator"]] = ""
+        finally:
+            file.close()    
     
-    data_sunlight_sensor = open(file_sunlight_sensor, "r").readline()
-    data_temperature_sensor = open(file_temperature_sensor, "r").readline()
-    data_washbasin_light = open(file_washbasin_light, "r").readline()
-    data_room_light1 = open(file_room_light1, "r").readline()
-    data_bot = open(file_bot, "r").readlines()
-    
-    f = {
-          "sunlight_sensor": data_sunlight_sensor, 
-          "temperature_sensor" : data_temperature_sensor,
-          "washbasin_light" : data_washbasin_light,
-          "room_light1" : data_room_light1,
-          "bot":{
-                "left": data_bot[0],
-                "bottom": data_bot[1]}
-          }
-    print(f)
-    return JsonResponse(json.dumps(f, ensure_ascii=False), safe=False)
-    
-    
+    sensorData["washbasin_light"] = open("Files/washbasin_light.txt", "r").readline()
+    sensorData["room_light1"] = open("Files/room_light1.txt", "r").readline()
+    print("in get sensor datac: ")
+    print(sensorData)
+    return JsonResponse(json.dumps(sensorData, ensure_ascii=False), safe=False)
+
+def getActuatorData(request):
+    actuatorData = {}
+    actuators_list = getActuatorList()
+    for actuators in actuators_list:
+        try:
+            actuator_file_name = "Files/" + actuators["actuator"] + ".txt"
+            file = open(sensor_file_name, "r")
+            sensorData[actuators["actuator"]] =  file.readline()
+        except (IOError, FileNotFoundError) as error:
+            file = open(sensor_file_name, "w")
+            sensorData[actuators["actuator"]] = ""
+        finally:
+            file.close()
+
+    print("in get actuator data")
+    return JsonResponse(json.dumps(sensorData, ensure_ascii=False), safe=False)
+
+def deleteSensorData(request):
+    sensor_name = request.POST.get('sensorName')
+    delSensor(sensor_name)
+    sensor_file_name = "Files/" + sensor_name + ".txt"
+    return JsonResponse({'message':'success'},status=200)
+
+def clickActuator(request):
+    actuator = request.POST.get('actuatorName')
+    url_switchActuator = url + "input_boolean/toggle"
+    entity_data = {"entity_id" : "input_boolean."+actuator }
+    response =  requests.post(url_roomlight, headers=headers, data = json.dumps(entity_data))
+    return JsonResponse({'message':'success'}, status=200)
+
 def sendActorDataRoomLight(request):
     print("in herre")
     url_roomlight = url + "input_boolean/toggle"
@@ -52,6 +119,7 @@ def sendActorDataRoomLight(request):
     response =  requests.post(url_roomlight, headers=headers, data = json.dumps(entity_data))
     print (response.text)
     return render(request, 'room1.html')
+    
     
 def sendActorDataWashLight(request):
     url_washlight = url + "input_boolean/toggle"
@@ -62,6 +130,9 @@ def sendActorDataWashLight(request):
     return render(request, 'room1.html')
     
     
+def reloadData(request):
+    resource_list = {}
+    resource_list["sensors"] = getSensorList()
+    resource_list["actuators"] = getActuatorList()
+    return JsonResponse(json.dumps(resource_list, ensure_ascii=False), safe=False)
 
-
-    
