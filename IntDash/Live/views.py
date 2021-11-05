@@ -9,7 +9,7 @@ from django.http import StreamingHttpResponse
 from django.http import JsonResponse
 from .forms import newResourceForms
 from .models import newResource
-from .add_sensor import *
+from .add_resource import *
 
 
 url = "http://localhost:8123/api/services/"
