@@ -29,9 +29,7 @@ def room1_display(request):
        form = newResourceForms(pDict) #if not valid shows error with previous post values in corresponding field
        if form.is_valid():
            form.save()
-           name = form.cleaned_data.get("name")
-           posx = form.cleaned_data.get("position_x")
-           posy = form.cleaned_data.get("position_y")
+
 
     context['form']= form
     
