@@ -24,8 +24,5 @@ urlpatterns = [
     path('reloadData/', views.reloadData, name='reloadData'),
     path('deleteSensorData/', views.deleteSensorData, name='deleteSensorData'),
     path('getSensorData/', views.getSensorData, name='getSensorData'),
-    path('getActuatorData/', views.getActuatorData, name='getActuatorData'),
     path('clickActuator/', views.clickActuator, name='clickActuator'),
-    path('sendActorDataRoomLight/', views.sendActorDataRoomLight, name='sendActorDataRoomLight'),
-    path('sendActorDataWashLight/', views.sendActorDataWashLight, name='sendActorDataWashLight'),
 ]

@@ -32,27 +32,16 @@ def room1_display(request):
            name = form.cleaned_data.get("name")
            posx = form.cleaned_data.get("position_x")
            posy = form.cleaned_data.get("position_y")
-           
-           #form = newResourceForms() # show empty form no need to give HttpResponseRedirect()
-           
-       
-    #form=newResourceForms(request.POST or None, request.FILES or None)
-    #if form.is_valid():
-    #   form.save()
-    #   name = form.cleaned_data.get("name")
-    #   posx = form.cleaned_data.get("position_x")
-    #   posy = form.cleaned_data.get("position_y")
-    #   getSensorList(name, posx, posy)
-    #   form=newResourceForms(request.POST or None, request.FILES or None)
+
     context['form']= form
     
     return render(request, 'room1.html', context)
-    
-    
+
 def getSensorData(request):
     sensorData = {}
     sensors_list = getSensorList()
     actuator_list = getActuatorList()
+    bot_list = getBotList()
     for sensors in sensors_list:
         try:
             sensor_file_name = "Files/" + sensors["sensor"] + ".txt"
@@ -63,7 +52,7 @@ def getSensorData(request):
             sensorData[sensors["sensor"]] = ""
         finally:
             file.close()
-            
+
     for actuator in actuator_list:
         try:
             sensor_file_name = "Files/" + actuator["actuator"] + ".txt"
@@ -73,29 +62,22 @@ def getSensorData(request):
             file = open(sensor_file_name, "w")
             sensorData[actuator["actuator"]] = ""
         finally:
-            file.close()    
+            file.close() 
     
-    sensorData["washbasin_light"] = open("Files/washbasin_light.txt", "r").readline()
-    sensorData["room_light1"] = open("Files/room_light1.txt", "r").readline()
-    print("in get sensor datac: ")
-    print(sensorData)
-    return JsonResponse(json.dumps(sensorData, ensure_ascii=False), safe=False)
-
-def getActuatorData(request):
-    actuatorData = {}
-    actuators_list = getActuatorList()
-    for actuators in actuators_list:
+    for bot in bot_list:
         try:
-            actuator_file_name = "Files/" + actuators["actuator"] + ".txt"
+            sensor_file_name = "Files/" + bot["bot"] + ".txt"
             file = open(sensor_file_name, "r")
-            sensorData[actuators["actuator"]] =  file.readline()
+            str = file.readlines()
+            str[0] = str[0].rstrip("\n")
+            str[1] = str[1].rstrip("\n")
+            sensorData[bot["bot"]] = str
         except (IOError, FileNotFoundError) as error:
             file = open(sensor_file_name, "w")
-            sensorData[actuators["actuator"]] = ""
+            sensorData[bot["bot"]] = ""
         finally:
-            file.close()
-
-    print("in get actuator data")
+            file.close() 
+            
     return JsonResponse(json.dumps(sensorData, ensure_ascii=False), safe=False)
 
 def deleteSensorData(request):
@@ -111,28 +93,10 @@ def clickActuator(request):
     response =  requests.post(url_switchActuator, headers=headers, data = json.dumps(entity_data))
     return JsonResponse({'message':'success'}, status=200)
 
-def sendActorDataRoomLight(request):
-    print("in herre")
-    url_roomlight = url + "input_boolean/toggle"
-    entity_data = {"entity_id" : "input_boolean.room_light1" }
-    
-    response =  requests.post(url_roomlight, headers=headers, data = json.dumps(entity_data))
-    print (response.text)
-    return render(request, 'room1.html')
-    
-    
-def sendActorDataWashLight(request):
-    url_washlight = url + "input_boolean/toggle"
-    entity_data = {"entity_id" : "input_boolean.washbasin_light" }
-    
-    response =  requests.post(url_washlight, headers=headers, data = json.dumps(entity_data))
-    print (response.text)
-    return render(request, 'room1.html')
-    
-    
 def reloadData(request):
     resource_list = {}
     resource_list["sensors"] = getSensorList()
     resource_list["actuators"] = getActuatorList()
+    resource_list["bot"] = getBotList()
     return JsonResponse(json.dumps(resource_list, ensure_ascii=False), safe=False)
 

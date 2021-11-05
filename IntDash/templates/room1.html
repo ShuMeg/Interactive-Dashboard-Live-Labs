@@ -25,7 +25,7 @@
         .washbasin_light{position:absolute;bottom:40%;right:10%;}
         .sunlight{position:absolute;right:50%;top:35%;}
         .temperature_sensor{position:absolute;right: 40%;top:60%;}
-        .dot {position:absolute; height: 10px; width: 10px; background-color: red; border-radius: 50%; display: inline-block; }
+        .bot {position:absolute;}
     
     </style>
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
@@ -37,16 +37,12 @@
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default" onclick="submit_sensor()">Save</button>
     </form>
-    <button id="demo" style = "position: absolute; top: 20%; left: 40%; background-color: yellow"></button>
+    
 <div class="imagewrap" id="buttonDivision" onmousemove="showCoords(event)" onmouseout="clearCoor()">
         {% include "room1.svg" %} 
             
             <!start buttons (html) here>
-            <button id = "room_light1" class="room_light1" onclick="clickMeRoomLight()"> Room Light </button>
-            <button id = "washbasin_light" class="washbasin_light" onclick="clickMeWashLight()"> Wash Basin Light </button>
-
-            <span class="dot" id = "bot"></span>
-            
+            <button id="demo" style = "position: absolute; top: 20%; left: 40%; background-color: yellow"></button>
             <button id = "reload_data" onclick = "reloadData()">Reload New Data</button>
             
         </div>
@@ -56,35 +52,21 @@
         var resourceList;
         var sensorList;
         var actuatorList;
+        var botList;
         
         function showCoords(event) {
           var x = event.clientX;
           var y = event.clientY;
           var xPercent = x / $( document ).width() * 100;
           var yPercent = y / $( document ).height() * 100;
-          var coor = "X coords: " + xPercent + ", Y coords: " + yPercent;
+          var coor = "X coords: " + (xPercent+13) + ", Y coords: " + (yPercent-10);
           document.getElementById("demo").innerHTML = coor;
+        
         }
         
         function clearCoor() {
           document.getElementById("demo").innerHTML = "";
         }
-        
-        function clickMeRoomLight(){
-         $.ajax({
-         url: '{% url "sendActorDataRoomLight" %}',
-         
-         });
-        }
-        
-        function clickMeWashLight(){
-         $.ajax({
-         url: '{% url "sendActorDataWashLight" %}',
-       
-         });
-        }
-
-        
         
         function ajaxCall(){
         $.ajax({
@@ -97,8 +79,7 @@
         {
          list_len =  sensorList.length;
          console.log("in get sensor data: "+list_len);
-         //document.getElementById("washbasin_light").innerHTML = "washbasin_light : " + data["washbasin_light"];
-         //document.getElementById("room_light1").innerHTML = "room_light : " + data["room_light1"];
+
          for(i=0; i<list_len; i++)
           { try{
             document.getElementById(sensorList[i].sensor).innerHTML =  sensorList[i].sensor +" : "+ data[sensorList[i].sensor];
@@ -125,6 +106,25 @@
             }
        
         }
+        
+         if (botList)
+        {
+         list_len =  botList.length;
+         console.log("in get actuator data: "+list_len);
+
+         for(i=0; i<list_len; i++)
+          { try{
+            document.getElementById(botList[i].bot).style.top =  data[botList[i].bot][1] + '%';
+            document.getElementById(botList[i].bot).style.left =  data[botList[i].bot][0] + '%';
+              }
+            catch(err)
+            {
+            }
+            
+            }
+       
+        }
+        
               }
         
              });
@@ -139,8 +139,12 @@
          resourceList = data;
          sensorList = data ["sensors"] ;
          actuatorList = data ["actuators"] ;
+         botList = data ["bot"];
+         
          sensorList_len = sensorList.length;
          actuatorList_len = actuatorList.length;
+         botList_len = botList.length;
+         
          console.log(sensorList_len);
          console.log(actuatorList_len);
          text="";
@@ -156,13 +160,20 @@
           document.getElementById("buttonDivision").innerHTML += text;
          
          }
+         
+          //text = "<button style = \" position : absolute; top:" + botList[i].posy +"%; left:"+ botList[i].posx +"%;\" id = \""+botList[i].bot+"\" ondblclick = \" deleteButton(this.id)\" >"+botList[i].bot+"</button>\n";
+          
+         for(i=0; i <botList_len; i++)
+         { text = "<button class = \"bot \" id = \""+botList[i].bot+"\" ondblclick = \" deleteButton(this.id)\" >"+botList[i].bot+"</button>\n";
+          document.getElementById("buttonDivision").innerHTML += text;
+         }
+         
          }
          
          });
         }
         
-        function clickActuator(buttonID)
-        {
+        function clickActuator(buttonID){
         
         $.ajax({
          type: "POST",

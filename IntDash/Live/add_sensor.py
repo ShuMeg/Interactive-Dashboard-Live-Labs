@@ -23,7 +23,18 @@ def getSensorList():
         sensor_list.append(sensor)
 
     return (sensor_list)
-    
+
+def getBotList() :
+    all_entries = newResource.objects.filter(resource = "bot")
+    bot_list = []
+    print("entries:")
+    for i in all_entries:
+        bot = {"bot" : i.name,
+                  "posx" : i.position_x,
+                  "posy" : i.position_y}
+        bot_list.append(bot)
+        
+    return (bot_list)
     
 def delSensor(sensor):
     print("in delete sensor"+str(sensor))
@@ -42,6 +53,7 @@ def getActuatorList() :
         actuator_list.append(actuator)
         
     return (actuator_list)
+
     
 def delActuator(actuator):    
     newResource.objects.get(name=str(actuator)).delete()
